@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>me.fxe</groupId>
+  <artifactId>kbase</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>kbase</name>
+  <url>http://maven.apache.org</url>
+
+  <repositories>
+    <repository>
+      <id>watson</id>
+      <url>http://193.137.11.210/nexus/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<maven.compiler.source>1.7</maven.compiler.source>
+	<maven.compiler.target>1.7</maven.compiler.target>
+	<biosynthframework.version>0.9.0-SNAPSHOT</biosynthframework.version>
+	<jackson.version>2.9.6</jackson.version>
+  </properties>
+
+  <dependencies>
+  <dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.7</version>
+</dependency>
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.6</version>
+</dependency>
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.25</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
+<dependency>
+    <groupId>javax.annotation</groupId>
+    <artifactId>javax.annotation-api</artifactId>
+    <version>1.3.2</version>
+</dependency>
+  
+		<dependency>
+			<groupId>pt.uminho.sysbio.biosynthframework</groupId>
+			<artifactId>biosynth-core</artifactId>
+			<version>${biosynthframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>pt.uminho.sysbio.biosynthframework</groupId>
+			<artifactId>biosynth-integration</artifactId>
+			<version>${biosynthframework.version}</version>
+		</dependency>
+  
+    <dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-core</artifactId>
+    <version>2.9.6</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.9.6</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-annotations</artifactId>
+    <version>2.9.6</version>
+</dependency>
+
+    <dependency>
+       <groupId>kbase</groupId>
+       <artifactId>kbase-auth</artifactId>
+       <scope>system</scope>
+       <version>0.4.3</version>
+       <systemPath>${basedir}\lib\kbase-auth-0.4.3.jar</systemPath>
+    </dependency>
+    <dependency>
+       <groupId>kbase</groupId>
+       <artifactId>kbase-common</artifactId>
+       <scope>system</scope>
+       <version>0.0.20</version>
+       <systemPath>${basedir}\lib\kbase-common-0.0.20.jar</systemPath>
+    </dependency>
+    <dependency>
+       <groupId>kbase</groupId>
+       <artifactId>WorkspaceClient</artifactId>
+       <scope>system</scope>
+       <version>0.6.0</version>
+       <systemPath>${basedir}\lib\WorkspaceClient-0.6.0.jar</systemPath>
+    </dependency>
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
