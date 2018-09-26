@@ -23,30 +23,31 @@ import pt.uminho.sysbio.biosynthframework.util.BiosIOUtils;
 public class TestKBaseAPI {
 
   private KBaseAPI api;
-  private final String TOKEN = "ME2Q4GNKLF5TOCNJ54XNTKRUWI6EODHG";
+  private final String TOKEN = "NLZV6DZOKXLHNJOTBWKJI6T2CPAWAFFH";
   private final String TEST_WS = "filipeliu:1452618747692";
   
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    String s = null;
-    try (InputStream is =  new FileInputStream("D:\\tmp\\integration/GCF_000005845.2.json")) {
-      ByteArrayOutputStream os = new ByteArrayOutputStream();
-      IOUtils.copy(is, os);
-      s = os.toString();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    
-    BiosIOUtils.fromJson(s, Genome.class);
+//    String s = null;
+//    try (InputStream is =  new FileInputStream("D:\\tmp\\integration/GCF_000005845.2.json")) {
+//      ByteArrayOutputStream os = new ByteArrayOutputStream();
+//      IOUtils.copy(is, os);
+//      s = os.toString();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
+//    
+//    BiosIOUtils.fromJson(s, Genome.class);
   }
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
+	  
   }
 
   @Before
   public void setUp() throws Exception {
-    api = new KBaseAPI(TOKEN, KBaseAPI.getConfigProd(), true);
+    api = new KBaseAPI(TOKEN, KBaseAPI.getConfigProd(), false);
   }
 
   @After

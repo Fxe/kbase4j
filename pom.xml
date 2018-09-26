@@ -12,6 +12,10 @@
 
   <repositories>
     <repository>
+      <id>maven</id>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>
+    <repository>
       <id>watson</id>
       <url>http://193.137.11.210/nexus/content/groups/public/</url>
     </repository>
@@ -81,23 +85,23 @@
        <artifactId>kbase-auth</artifactId>
        <scope>system</scope>
        <version>0.4.3</version>
-       <systemPath>${basedir}\lib\kbase-auth-0.4.3.jar</systemPath>
+       <systemPath>${basedir}/lib/kbase-auth-0.4.3.jar</systemPath>
     </dependency>
     <dependency>
        <groupId>kbase</groupId>
        <artifactId>kbase-common</artifactId>
        <scope>system</scope>
        <version>0.0.20</version>
-       <systemPath>${basedir}\lib\kbase-common-0.0.20.jar</systemPath>
+       <systemPath>${basedir}/lib/kbase-common-0.0.20.jar</systemPath>
     </dependency>
     <dependency>
        <groupId>kbase</groupId>
        <artifactId>WorkspaceClient</artifactId>
        <scope>system</scope>
        <version>0.6.0</version>
-       <systemPath>${basedir}\lib\WorkspaceClient-0.6.0.jar</systemPath>
+       <systemPath>${basedir}/lib/WorkspaceClient-0.6.0.jar</systemPath>
     </dependency>
-    
+     
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

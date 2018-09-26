@@ -26,6 +26,7 @@ import kbasefba.ModelReactionReagent;
 import kbasegenomes.Genome;
 import pt.uminho.sysbio.biosynthframework.BHashMap;
 import pt.uminho.sysbio.biosynthframework.BMap;
+import pt.uminho.sysbio.biosynthframework.CompartmentalizedStoichiometry;
 import pt.uminho.sysbio.biosynthframework.EntityType;
 import pt.uminho.sysbio.biosynthframework.ModelAdapter;
 import pt.uminho.sysbio.biosynthframework.Range;
@@ -960,5 +961,29 @@ public class KBaseModelAdapter implements ModelAdapter {
         }
       }
     }
+  }
+
+  @Override
+  public CompartmentalizedStoichiometry<String, String> getCompartmentalizedStoichiometry(String mrxnEntry) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Set<String> getReactionGeneIds(String rxnId) {
+    ModelReaction mr = this.rxnMap.get(rxnId);
+    if (mr == null) {
+      return null;
+    }
+    
+    Set<String> geneIds = new HashSet<>();
+    for (ModelReactionProtein mrp : mr.getModelReactionProteins()) {
+      for (ModelReactionProteinSubunit mrps : mrp.getModelReactionProteinSubunits()) {
+        for (String featureRef : mrps.getFeatureRefs()) {
+          geneIds.add(getEntryFromRef(featureRef));
+        }
+      }
+    }
+    return geneIds;
   }
 }
