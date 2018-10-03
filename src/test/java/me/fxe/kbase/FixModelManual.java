@@ -33,6 +33,9 @@ public class FixModelManual {
   private final String TOKEN = "2ND6UI5S5ITGP4JWIJGAPR6KVOMXPDYI";
   private final String WS = "jplfaria:narrative_1531842945859";
 
+//  private final String TOKEN = DATAAA.
+//  private final String WS = "jplfaria:narrative_1531842945859";
+  
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
   }

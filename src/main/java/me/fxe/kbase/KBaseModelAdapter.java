@@ -968,6 +968,18 @@ public class KBaseModelAdapter implements ModelAdapter {
     // TODO Auto-generated method stub
     return null;
   }
+  
+  public static Set<String> getModelReactionGeneIds(ModelReaction mr) {
+    Set<String> geneIds = new HashSet<>();
+    for (ModelReactionProtein mrp : mr.getModelReactionProteins()) {
+      for (ModelReactionProteinSubunit mrps : mrp.getModelReactionProteinSubunits()) {
+        for (String featureRef : mrps.getFeatureRefs()) {
+          geneIds.add(getEntryFromRef(featureRef));
+        }
+      }
+    }
+    return geneIds;
+  }
 
   @Override
   public Set<String> getReactionGeneIds(String rxnId) {

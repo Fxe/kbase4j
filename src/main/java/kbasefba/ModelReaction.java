@@ -86,7 +86,7 @@ public class ModelReaction {
     @JsonProperty("numerical_attributes")
     private Map<String, Double> numericalAttributes;
     @JsonProperty("gapfill_data")
-    private Map<String, Map<Long, Tuple3 <String, Long, List<kbasefba.ModelReactionProtein>>>> gapfillData;
+    private Map<String, Map<Long, Object>> gapfillData;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("id")
@@ -375,16 +375,16 @@ public class ModelReaction {
     }
 
     @JsonProperty("gapfill_data")
-    public Map<String, Map<Long, Tuple3 <String, Long, List<kbasefba.ModelReactionProtein>>>> getGapfillData() {
+    public Map<String, Map<Long, Object>> getGapfillData() {
         return gapfillData;
     }
 
     @JsonProperty("gapfill_data")
-    public void setGapfillData(Map<String, Map<Long, Tuple3 <String, Long, List<kbasefba.ModelReactionProtein>>>> gapfillData) {
+    public void setGapfillData(Map<String, Map<Long, Object>> gapfillData) {
         this.gapfillData = gapfillData;
     }
 
-    public ModelReaction withGapfillData(Map<String, Map<Long, Tuple3 <String, Long, List<kbasefba.ModelReactionProtein>>>> gapfillData) {
+    public ModelReaction withGapfillData(Map<String, Map<Long, Object>> gapfillData) {
         this.gapfillData = gapfillData;
         return this;
     }
