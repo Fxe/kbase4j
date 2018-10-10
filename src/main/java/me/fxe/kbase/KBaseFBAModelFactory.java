@@ -446,6 +446,7 @@ public class KBaseFBAModelFactory {
     extraAttributes.put("original_id", rxnEntry);
 
     String gpr = xadapter.getGpr(rxnEntry);
+    
     Set<String> genes = new HashSet<> ();
     if (DataUtils.empty(gpr)) {
       gpr = "";
@@ -561,8 +562,8 @@ public class KBaseFBAModelFactory {
   }
 
   public FBAModel build() {
-    @SuppressWarnings("deprecation")
-    XmlSbmlModelAdapter xadapter = null; //new FixedAdapter(xmodel);
+//    @SuppressWarnings("deprecation")
+    XmlSbmlModelAdapter xadapter = new XmlSbmlModelAdapter(xmodel);
     
     FBAModel model = new FBAModel();
     model.setId(modelId);
@@ -585,6 +586,8 @@ public class KBaseFBAModelFactory {
     int biomassCounter = 1;
     
     for (XmlSbmlReaction xrxn : xmodel.getReactions()) {
+      logger.info("{}", xrxn.getAttributes());
+      
       String rxnEntry = xrxn.getAttributes().get("id");
       ModelReaction krxn = buildReaction(xrxn, xadapter);
       

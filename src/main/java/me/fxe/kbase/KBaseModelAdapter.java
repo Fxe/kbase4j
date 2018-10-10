@@ -575,6 +575,7 @@ public class KBaseModelAdapter implements ModelAdapter {
     return result;
   }
   
+  @Deprecated
   public static String getEntryFromRef(String ref) {
     String[] tks = ref.split("/");
     String s = tks[tks.length - 1];

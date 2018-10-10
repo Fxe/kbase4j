@@ -177,6 +177,12 @@ public class KBaseUtils {
     return set;
   }
 
+  public static String getEntryFromRef(String ref) {
+    String[] tks = ref.split("/");
+    String s = tks[tks.length - 1];
+    return s;
+  }
+  
   public static Set<String> decideCompartment(Set<String> cmps) {
     if (cmps.size() == 2) {
       Iterator<String> it = cmps.iterator();
