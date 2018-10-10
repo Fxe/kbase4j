@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import genomeannotationapi.GenomeAnnotationApiClient;
 import genomeannotationapi.GenomeDataSetV1;
 import genomeannotationapi.GenomeDataV1;
@@ -153,6 +155,12 @@ public class KBaseAPI {
   public Object getWorkspaceObject(String id, String ws) throws IOException {
     Object o = KBaseUtils.getObject(id, ws, null, getWorkspaceClient());
     return o;
+  }
+  
+  public<T> T getWorkspaceObject(String id, String ws, Class<T> clazz) throws IOException {
+    Object o = KBaseUtils.getObject(id, ws, null, getWorkspaceClient());
+    ObjectMapper om = new ObjectMapper();
+    return om.convertValue(o, clazz);
   }
   
   public Genome getGenome(String id, String ws) throws IOException {
