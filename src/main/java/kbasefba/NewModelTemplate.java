@@ -278,4 +278,6 @@ public class NewModelTemplate {
         return ((((((((((((((((((((((((((((("NewModelTemplate"+" [id=")+ id)+", name=")+ name)+", type=")+ type)+", domain=")+ domain)+", biochemistryRef=")+ biochemistryRef)+", roles=")+ roles)+", complexes=")+ complexes)+", compounds=")+ compounds)+", compcompounds=")+ compcompounds)+", compartments=")+ compartments)+", reactions=")+ reactions)+", biomasses=")+ biomasses)+", pathways=")+ pathways)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
+
+
 }

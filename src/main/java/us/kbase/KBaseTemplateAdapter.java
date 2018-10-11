@@ -2,6 +2,7 @@ package us.kbase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -226,5 +227,84 @@ public class KBaseTemplateAdapter {
     }
     trxn.getTemplatecomplexRefs().clear();
     trxn.getTemplatecomplexRefs().addAll(allow);
+  }
+
+  public Set<String> getReactionIds() {
+    return new HashSet<String>(this.rxnToTemplateReaction.keySet());
+  }
+
+  public void removeReaction(String rxnId) {
+    if (rxnToTemplateReaction.containsKey(rxnId)) {
+      for (String trxnId : rxnToTemplateReaction.get(rxnId)) {
+        NewTemplateReaction trxn = trxnMap.get(trxnId);
+//        System.out.println(trxn.getTemplatecomplexRefs());
+        trxn.getTemplatecomplexRefs().clear();
+//        System.out.println(trxnId);
+      }
+    }
+  }
+  
+  public void cleanOphanTemplateReactions() {
+    List<NewTemplateReaction> keep = new ArrayList<>();
+    for (NewTemplateReaction trxn : template.getReactions()) {
+      if (!trxn.getTemplatecomplexRefs().isEmpty()) {
+        keep.add(trxn);
+      }
+    }
+    
+    System.out.println(keep.size() + " " + template.getReactions().size());
+    template.setReactions(keep);
+  }
+  
+  public void cleanOphanComplexes() {
+    
+    
+    Set<String> assigned = new HashSet<>();
+    for (NewTemplateReaction trxn : template.getReactions()) {
+      for (String ref : trxn.getTemplatecomplexRefs()) {
+        String cpxId = KBaseUtils.getEntryFromRef(ref);
+        assigned.add(cpxId);
+      }
+    }
+    
+    List<TemplateComplex> keep = new ArrayList<>();
+    for (TemplateComplex cpx : template.getComplexes()) {
+      if (!assigned.contains(cpx.getId())) {
+        keep.add(cpx);
+      }
+    }
+    
+    System.out.println(keep.size() + " " + template.getComplexes().size());
+    template.setComplexes(keep);
+  }
+
+  public Set<String> getFunctions() {
+    Set<String> functions = new HashSet<>();
+    for (TemplateRole role : template.getRoles()) {
+      functions.add(role.getName());
+    }
+    return functions;
+  }
+
+  public void removeFunctionFromComplexes(String f) {
+    
+    String roleId = null;
+    
+    for (TemplateRole role : this.roleMap.values()) {
+      if (role.getName().equals(f)) {
+        roleId = role.getId();
+      }
+    }
+    
+    if (roleId != null) {
+      for (String cpxId : this.cpxMap.keySet()) {
+        TemplateComplex cpx = this.cpxMap.get(cpxId);
+        removeRoleFromTemplateComplex(cpx, roleId);
+      }
+    } else {
+      System.out.println(f);
+    }
+
+    
   }
 }
