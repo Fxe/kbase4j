@@ -7,24 +7,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import kbasefba.NewModelTemplate;
 import kbasefba.NewTemplateReaction;
 import kbasefba.TemplateComplex;
 import kbasefba.TemplateComplexRole;
 import kbasefba.TemplateRole;
 import me.fxe.kbase.KBaseUtils;
+import pt.uminho.sysbio.biosynthframework.Tuple2;
 import pt.uminho.sysbio.biosynthframework.util.CollectionUtils;
 
 public class KBaseTemplateAdapter {
+  
+  private static final Logger logger = LoggerFactory.getLogger(KBaseTemplateAdapter.class);
   
   private final NewModelTemplate template;
   public Map<String, TemplateComplex> cpxMap = new HashMap<>();
   public Map<String, TemplateRole> roleMap = new HashMap<>();
   public Map<String, NewTemplateReaction> trxnMap = new HashMap<>();
   public Map<String, Set<String>> rxnToTemplateReaction = new HashMap<>();
+//  public Map<String, String> templateReactionToRxn = new HashMap<>();
   public Map<String, Set<String>> cpxIdToTemplateReactions = new HashMap<>();
   public Map<String, Set<String>> roleIdToTemplateReactions = new HashMap<>();
   public Map<String, Set<String>> roleIdToComplexIds = new HashMap<>();
+  public Map<String, Set<String>> functionToRoleId = new HashMap<>();
   
   public KBaseTemplateAdapter(final NewModelTemplate template) {
     this.template = template;
@@ -39,29 +47,44 @@ public class KBaseTemplateAdapter {
     
     for (TemplateRole role : this.template.getRoles()) {
       roleMap.put(role.getId(), role);
+      CollectionUtils.insertHS(role.getName(), role.getId(), functionToRoleId);
+//      if (functionToRoleId.put(role.getName(), role.getId()) != null) {
+//        logger.warn("{}", role.getName());
+//      }
     }
     
     for (NewTemplateReaction trxn : this.template.getReactions()) {
-      trxnMap.put(trxn.getId(), trxn);
+      String trxnId = trxn.getId();
+      trxnMap.put(trxnId, trxn);
 
       String ref = trxn.getReactionRef();
-      if (ref == null) { 
-        String id  = trxn.getId().split("_")[0];
-        CollectionUtils.insertHS(id, trxn.getId(), rxnToTemplateReaction);
-      } else {
-        String id = KBaseUtils.getEntryFromRef(trxn.getReactionRef());
-        CollectionUtils.insertHS(id, trxn.getId(), rxnToTemplateReaction);
-      }
+      String rxnId = getModelSeedReactionId(trxn);
+      CollectionUtils.insertHS(rxnId, trxnId, rxnToTemplateReaction);
 
       for (String complexRef : trxn.getTemplatecomplexRefs()) {
         String cpxId = KBaseUtils.getEntryFromRef(complexRef);
         TemplateComplex cpx = cpxMap.get(KBaseUtils.getEntryFromRef(complexRef));
-        CollectionUtils.insertHS(cpxId, trxn.getId(), cpxIdToTemplateReactions);
-        for (TemplateComplexRole role : cpx.getComplexroles()) {
-          String roleId = KBaseUtils.getEntryFromRef(role.getTemplateroleRef());
-          CollectionUtils.insertHS(roleId, trxn.getId(), roleIdToTemplateReactions);
+        if (cpx != null) {
+          CollectionUtils.insertHS(cpxId, trxn.getId(), cpxIdToTemplateReactions);
+          for (TemplateComplexRole role : cpx.getComplexroles()) {
+            String roleId = KBaseUtils.getEntryFromRef(role.getTemplateroleRef());
+            CollectionUtils.insertHS(roleId, trxn.getId(), roleIdToTemplateReactions);
+          }          
+        } else {
+          logger.debug("missing complex {} -> {}", trxn.getId(), cpxId);
         }
       }
+    }
+  }
+  
+  public static String getModelSeedReactionId(NewTemplateReaction trxn) {
+    String ref = trxn.getReactionRef();
+    if (ref == null) { 
+      String id  = trxn.getId().split("_")[0];
+      return id;
+    } else {
+      String id = KBaseUtils.getEntryFromRef(trxn.getReactionRef());
+      return id;
     }
   }
   
@@ -132,6 +155,10 @@ public class KBaseTemplateAdapter {
   public void lock(String trxnId, Map<String, Set<String>> gpr) {
     System.out.println(gpr);
     NewTemplateReaction trxn = trxnMap.get(trxnId);
+    if (trxn == null) {
+      logger.warn("Reaction not found {}", trxnId);
+      return;
+    }
     trxn.getTemplatecomplexRefs().clear();
     
     Map<String, Set<String>> roleToComplex = new HashMap<>();
@@ -237,29 +264,61 @@ public class KBaseTemplateAdapter {
     if (rxnToTemplateReaction.containsKey(rxnId)) {
       for (String trxnId : rxnToTemplateReaction.get(rxnId)) {
         NewTemplateReaction trxn = trxnMap.get(trxnId);
-//        System.out.println(trxn.getTemplatecomplexRefs());
         trxn.getTemplatecomplexRefs().clear();
-//        System.out.println(trxnId);
       }
+    } else {
+      logger.warn("{}", rxnId);
     }
   }
   
   public void cleanOphanTemplateReactions() {
     List<NewTemplateReaction> keep = new ArrayList<>();
     for (NewTemplateReaction trxn : template.getReactions()) {
+      
+      List<String> complexRefs = new ArrayList<>();
+      for (String complexRef : trxn.getTemplatecomplexRefs()) {
+        String cpxId = KBaseUtils.getEntryFromRef(complexRef);
+        TemplateComplex cpx = cpxMap.get(cpxId);
+        if (cpx != null) {
+          complexRefs.add(complexRef);
+        }
+      }
+      trxn.setTemplatecomplexRefs(complexRefs);
+      
       if (!trxn.getTemplatecomplexRefs().isEmpty()) {
         keep.add(trxn);
       }
     }
     
-    System.out.println(keep.size() + " " + template.getReactions().size());
+    logger.info("cleanOphanTemplateReactions {} {}", keep.size(), template.getReactions().size());
     template.setReactions(keep);
+  }
+  
+  public void cleanOphanFunctions() {
+    Set<String> assigned = new HashSet<>();
+    for (TemplateComplex cpx : this.cpxMap.values()) {
+      for (TemplateComplexRole role : cpx.getComplexroles()) {
+        String roleId = KBaseUtils.getEntryFromRef(role.getTemplateroleRef());
+        assigned.add(roleId);
+      }
+    }
+    
+    List<TemplateRole> keep = new ArrayList<>();
+    for (TemplateRole role : template.getRoles()) {
+      if (assigned.contains(role.getId())) {
+        keep.add(role);
+      }
+    }
+    
+    logger.info("cleanOphanFunctions {} {}", keep.size(), template.getRoles().size());
+    template.setRoles(keep);
   }
   
   public void cleanOphanComplexes() {
     
     
     Set<String> assigned = new HashSet<>();
+    
     for (NewTemplateReaction trxn : template.getReactions()) {
       for (String ref : trxn.getTemplatecomplexRefs()) {
         String cpxId = KBaseUtils.getEntryFromRef(ref);
@@ -269,12 +328,14 @@ public class KBaseTemplateAdapter {
     
     List<TemplateComplex> keep = new ArrayList<>();
     for (TemplateComplex cpx : template.getComplexes()) {
-      if (!assigned.contains(cpx.getId())) {
-        keep.add(cpx);
+      if (!cpx.getComplexroles().isEmpty()) {
+        if (assigned.contains(cpx.getId())) {
+          keep.add(cpx);
+        }        
       }
     }
     
-    System.out.println(keep.size() + " " + template.getComplexes().size());
+    logger.info("cleanOphanComplexes {} {}", keep.size(), template.getComplexes().size());
     template.setComplexes(keep);
   }
 
@@ -302,9 +363,69 @@ public class KBaseTemplateAdapter {
         removeRoleFromTemplateComplex(cpx, roleId);
       }
     } else {
-      System.out.println(f);
+      logger.warn(f);
     }
 
     
+  }
+
+  public Set<Tuple2<String>> getRxnFunctionPairs() {
+    Set<Tuple2<String>> pairs = new HashSet<>();
+    
+    for (String roleId : this.roleIdToTemplateReactions.keySet()) {
+      for (String trxnId : this.roleIdToTemplateReactions.get(roleId)) {
+        NewTemplateReaction trxn = this.trxnMap.get(trxnId);
+        String rxnId = getModelSeedReactionId(trxn);
+        String function = this.roleMap.get(roleId).getName();
+        pairs.add(new Tuple2<String>(rxnId, function));
+      }
+    }
+    
+    return pairs;
+  }
+
+  public boolean isMapped(String rxnId, String function) {
+    Set<String> roleIds = functionToRoleId.get(function);
+    if (roleIds == null) {
+      return false;
+    }
+    
+    
+    for (String roleId : roleIds) {
+      Set<String> trxnIds = this.roleIdToTemplateReactions.get(roleId);
+      if (trxnIds != null && !trxnIds.isEmpty()) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
+  public void removeFunctionFromReaction(String function, String rxnId) {
+    logger.debug("remove {} -> {}", rxnId, function);
+    Set<String> trxnIds = this.rxnToTemplateReaction.get(rxnId);
+    for (String roleId : this.functionToRoleId.get(function)) {
+//      System.out.println(roleId);
+      Set<String> cpxIds = roleIdToComplexIds.get(roleId);
+      for (String cpxId : cpxIds) {
+        for (String trxnId : trxnIds) {
+          NewTemplateReaction trxn = this.trxnMap.get(trxnId);
+          List<String> keep = new ArrayList<>();
+          for (String ref : trxn.getTemplatecomplexRefs()) {
+            if (!ref.contains(cpxId)) {
+              keep.add(ref);
+            }
+          }
+          
+          if (keep.size() != trxn.getTemplatecomplexRefs().size()) {
+            logger.debug("{} {} -> {}", trxn.getId(), keep.size(), trxn.getTemplatecomplexRefs().size());
+            trxn.setTemplatecomplexRefs(keep);
+          }
+          
+//          System.out.println(trxnId + " " + trxn.getTemplatecomplexRefs().size());
+        }
+      }
+
+    }
   }
 }
