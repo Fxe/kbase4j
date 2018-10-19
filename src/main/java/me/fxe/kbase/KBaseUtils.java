@@ -78,7 +78,7 @@ public class KBaseUtils {
     return fbaModel;
   }
 
-  public static void save(String nameId, String dataType, Object o, String ws, final WorkspaceClient wsClient) throws Exception {
+  public static String save(String nameId, String dataType, Object o, String ws, final WorkspaceClient wsClient) throws Exception {
 //    long wsId = dfuClient.wsNameToId(ws);
 
 //    SaveObjectsParams params = new SaveObjectsParams()
@@ -110,9 +110,9 @@ public class KBaseUtils {
 //      String ref = KBaseIOUtils.getRefFromObjectInfo(info);
 //      result = new KBaseId(info.getE2(), info.getE8(), ref);
 //    }
-//    String ref = getRefFromObjectInfo(dfuClient.saveObjects(params).get(0));
+    String ref = getRefFromObjectInfo(mg.get(0));
 
-//    return result;
+    return ref;
   }
   
   public static byte[] loadJsonFromZip(String path) throws IOException {
@@ -209,8 +209,13 @@ public class KBaseUtils {
         return singleton(s.get("d"));
       } else if (s.containsKey("m") && s.containsKey("j")) {
         return singleton(s.get("j"));
+      } else if (s.containsKey("c") && s.containsKey("p")) {
+        return singleton(s.get("p"));
+      } else if (s.containsKey("p") && s.containsKey("e")) {
+        return singleton(s.get("e"));
       }
-      System.out.println(s1 + " " + s2);
+      
+      //System.out.println(s1 + " " + s2);
     } else {
       return new HashSet<>(cmps);
     }

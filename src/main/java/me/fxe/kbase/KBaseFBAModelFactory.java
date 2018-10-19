@@ -586,7 +586,7 @@ public class KBaseFBAModelFactory {
     int biomassCounter = 1;
     
     for (XmlSbmlReaction xrxn : xmodel.getReactions()) {
-      logger.info("{}", xrxn.getAttributes());
+      logger.trace("{}", xrxn.getAttributes());
       
       String rxnEntry = xrxn.getAttributes().get("id");
       ModelReaction krxn = buildReaction(xrxn, xadapter);
