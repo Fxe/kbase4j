@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import datafileutil.DataFileUtilClient;
 import genomeannotationapi.GenomeAnnotationApiClient;
 import genomeannotationapi.GenomeDataSetV1;
 import genomeannotationapi.GenomeDataV1;
@@ -49,6 +50,7 @@ public class KBaseAPI {
   public AuthToken authToken;
   public URL callbackURL;
   
+  public DataFileUtilClient dfuClient;
   public WorkspaceClient wsClient;
   public GenomeFileUtilClient gfuClient;
   public GenomeAnnotationApiClient gaClient;
@@ -131,15 +133,17 @@ public class KBaseAPI {
 //        solrClient = new KBSolrUtilClient(callbackURL, authToken);
       }
       
+      dfuClient = new DataFileUtilClient(callbackURL, authToken);
       gaClient = new GenomeAnnotationApiClient(callbackURL, authToken);
       gfuClient = new GenomeFileUtilClient(callbackURL, authToken);
 //      gaClient = new GenomeAnnotationAPIClient(callbackURL, authToken);
 //      gaClient.setConnectionReadTimeOut(900000000);
 //      gaClient.setAsyncJobCheckMaxTimeMs(6000000);
 //      dfuClient = new DataFileUtilClient(callbackURL, authToken);
-//      dfuClient.setIsInsecureHttpConnectionAllowed(false);
+      dfuClient.setIsInsecureHttpConnectionAllowed(false);
 //      gaClient.setIsInsecureHttpConnectionAllowed(false);
       wsClient.setIsInsecureHttpConnectionAllowed(false);
+      
 //      solrClient.setIsInsecureHttpConnectionAllowed(false);
 //      solrClient.setServiceVersion("beta");
     } catch (IOException | URISyntaxException | AuthException | UnauthorizedException e) {
